@@ -1,95 +1,104 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+
+import NoteCard from "@/components/NoteCard";
+import { AddIcon } from "@chakra-ui/icons";
+import { Link } from "@chakra-ui/next-js";
+import {
+  Box,
+  Button,
+  Center,
+  Flex,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  SimpleGrid,
+  Spacer,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 
 export default function Home() {
+  const isEmpty: boolean = false;
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <>
+      <Flex>
+        <Center>
+          <Text fontSize="4xl" fontWeight="700">
+            Daftar Catatan
+          </Text>
+        </Center>
+        <Spacer />
+        <Center>
+          <Link href="/new">
+            <Button
+              leftIcon={<AddIcon />}
+              paddingInline={8}
+              paddingBlock={6}
+              borderRadius="100"
+              fontSize="lg"
+              colorScheme="blue"
+              variant="solid"
+            >
+              Tambah
+            </Button>
+          </Link>
+        </Center>
+      </Flex>
+
+      {/* EMPTY STATE */}
+      {isEmpty ? (
+        <Center>
+          <Text marginBlock={48} textColor="grey" fontSize="2xl">
+            Tidak Ada Catatan
+          </Text>
+        </Center>
+      ) : (
+        <Box marginTop={12} marginBottom={12}>
+          <SimpleGrid columns={2} spacing={8}>
+            {[...Array(10)].map((_, idx) => (
+              <NoteCard
+                key={idx}
+                id={idx}
+                title="View a summary of all your customers"
+                detail="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ac sagittis est. Etiam aliquet gravida viverra."
+                onDeleteClick={onOpen}
+              />
+            ))}
+          </SimpleGrid>
+          <Modal
+            blockScrollOnMount={false}
+            isOpen={isOpen}
+            onClose={onClose}
+            isCentered
           >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Hapus Catatan</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody>
+                <Text mb="1rem">
+                  Apakah ingin menghapus catatan{" "}
+                  <b>'View a summary of all your customers'</b> akan dihapus!
+                </Text>
+              </ModalBody>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+              <ModalFooter>
+                <Button colorScheme="red" mr={3} onClick={onClose}>
+                  Hapus
+                </Button>
+                <Button variant="ghost">Batalkan</Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        </Box>
+      )}
+    </>
   );
 }
