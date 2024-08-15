@@ -15,13 +15,13 @@ export default function DetailHeader({ title }: DetailHeaderParams) {
     <Flex>
       <Center>
         <ArrowBackIcon
-          boxSize={10}
+          boxSize={8}
           marginRight={8}
           onClick={() => router.back()}
           cursor="pointer"
         />
       </Center>
-      <Text fontSize="4xl" as="b">
+      <Text fontSize="3xl" as="b">
         {title}
       </Text>
     </Flex>

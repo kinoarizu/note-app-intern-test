@@ -7,6 +7,7 @@ import {
   Box,
   Button,
   Center,
+  CircularProgress,
   Flex,
   Modal,
   ModalBody,
@@ -21,16 +22,35 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 
-export default function Home() {
-  const isEmpty: boolean = false;
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_NOTES } from "@/graphql/queries";
+import { Note } from "@/types/Note";
+import { DELETE_NOTE } from "@/graphql/mutations";
+import { useState } from "react";
+import client from "@/config/apollo_client";
 
+export default function Home() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { loading, data } = useQuery(GET_NOTES);
+  const [deleteNote] = useMutation(DELETE_NOTE);
+
+  const [selectedNote, setSelectedNote] = useState({
+    id: "",
+    title: "",
+  });
+
+  if (loading)
+    return (
+      <Center>
+        <CircularProgress marginBlock={240} isIndeterminate size="100px" />
+      </Center>
+    );
 
   return (
     <>
       <Flex>
         <Center>
-          <Text fontSize="4xl" fontWeight="700">
+          <Text fontSize="3xl" fontWeight="700">
             Daftar Catatan
           </Text>
         </Center>
@@ -39,7 +59,7 @@ export default function Home() {
           <Link href="/new">
             <Button
               leftIcon={<AddIcon />}
-              paddingInline={8}
+              paddingInline={6}
               paddingBlock={6}
               borderRadius="100"
               fontSize="lg"
@@ -53,7 +73,7 @@ export default function Home() {
       </Flex>
 
       {/* EMPTY STATE */}
-      {isEmpty ? (
+      {data.notes.length === 0 ? (
         <Center>
           <Text marginBlock={48} textColor="grey" fontSize="2xl">
             Tidak Ada Catatan
@@ -62,13 +82,17 @@ export default function Home() {
       ) : (
         <Box marginTop={12} marginBottom={12}>
           <SimpleGrid columns={2} spacing={8}>
-            {[...Array(10)].map((_, idx) => (
+            {data.notes.map(({ id, title, body, createdAt }: Note) => (
               <NoteCard
-                key={idx}
-                id={idx}
-                title="View a summary of all your customers"
-                detail="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ac sagittis est. Etiam aliquet gravida viverra."
-                onDeleteClick={onOpen}
+                key={id}
+                id={id}
+                title={title}
+                detail={body}
+                createdAt={createdAt}
+                onDeleteClick={() => {
+                  onOpen();
+                  setSelectedNote({ id, title });
+                }}
               />
             ))}
           </SimpleGrid>
@@ -85,15 +109,32 @@ export default function Home() {
               <ModalBody>
                 <Text mb="1rem">
                   Apakah ingin menghapus catatan{" "}
-                  <b>'View a summary of all your customers'</b> akan dihapus!
+                  <b>&apos;{selectedNote.title}&apos;</b> akan dihapus!
                 </Text>
               </ModalBody>
 
               <ModalFooter>
-                <Button colorScheme="red" mr={3} onClick={onClose}>
+                <Button
+                  colorScheme="red"
+                  mr={3}
+                  onClick={async () => {
+                    await deleteNote({
+                      variables: {
+                        id: selectedNote.id,
+                      },
+                    });
+                    setSelectedNote({ id: "", title: "" });
+                    client.refetchQueries({
+                      include: [GET_NOTES],
+                    });
+                    onClose();
+                  }}
+                >
                   Hapus
                 </Button>
-                <Button variant="ghost">Batalkan</Button>
+                <Button variant="ghost" onClick={onClose}>
+                  Batalkan
+                </Button>
               </ModalFooter>
             </ModalContent>
           </Modal>

@@ -11,9 +11,10 @@ import {
 } from "@chakra-ui/react";
 
 interface NoteCardParams {
-  id: number;
+  id: string;
   title: string;
   detail: string;
+  createdAt: string;
   onDeleteClick: () => void;
 }
 
@@ -21,14 +22,15 @@ export default function NoteCard({
   id,
   title,
   detail,
+  createdAt,
   onDeleteClick,
 }: NoteCardParams) {
   return (
-    <Card _hover={{ backgroundColor: "#EEF" }} boxShadow="outline">
-      <CardBody>
-        <Flex>
-          <Center>
-            <Link href={"/note/" + id} _hover={{ textDecoration: "none" }}>
+    <Link href={"/note/" + id} _hover={{ textDecoration: "none" }}>
+      <Card _hover={{ backgroundColor: "#EEF" }} boxShadow="outline">
+        <CardBody>
+          <Flex>
+            <Center>
               <Flex flexDirection="column">
                 <Text marginRight={4} fontSize="md" fontWeight="700">
                   {title}
@@ -51,36 +53,38 @@ export default function NoteCard({
                   textAlign="justify"
                   color="#BAA"
                 >
-                  24 Jan 2024
+                  {createdAt}
                 </Text>
               </Flex>
-            </Link>
-          </Center>
-          <Spacer />
-          <Center>
-            <Flex>
-              <Link href={"/edit/" + id}>
-                <IconButton
-                  aria-label="Edit"
-                  icon={<EditIcon />}
-                  bgColor="white"
-                  variant="solid"
-                  fontSize={20}
-                />
-              </Link>
-              <IconButton
-                aria-label="Delete"
-                icon={<DeleteIcon />}
-                bgColor="white"
-                color="red"
-                variant="solid"
-                fontSize={20}
-                onClick={onDeleteClick}
-              />
-            </Flex>
-          </Center>
-        </Flex>
-      </CardBody>
-    </Card>
+            </Center>
+            <Spacer />
+            <Center>
+              <Flex>
+                <Link href={"/edit/" + id}>
+                  <IconButton
+                    aria-label="Edit"
+                    icon={<EditIcon />}
+                    bgColor="white"
+                    variant="solid"
+                    fontSize={20}
+                  />
+                </Link>
+                <Link href="/">
+                  <IconButton
+                    aria-label="Delete"
+                    icon={<DeleteIcon />}
+                    bgColor="white"
+                    color="red"
+                    variant="solid"
+                    fontSize={20}
+                    onClick={onDeleteClick}
+                  />
+                </Link>
+              </Flex>
+            </Center>
+          </Flex>
+        </CardBody>
+      </Card>
+    </Link>
   );
 }
