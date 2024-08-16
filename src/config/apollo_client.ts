@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 export default new ApolloClient({
-  uri: "http://localhost:3000/api/graphql",
+  uri: "https://note-app-intern-test.vercel.app/api/graphql",
   cache: new InMemoryCache(),
 });
