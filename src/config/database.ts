@@ -11,6 +11,6 @@ export const dbPool = new Pool({
   port: parseInt(process.env.DB_PORT || "5432", 10),
   ssl: {
     rejectUnauthorized: true,
-    ca: fs.readFileSync("./ca.pem").toString(),
+    ca: fs.readFileSync(process.cwd() + "/ca.pem").toString(),
   }
 });
